@@ -29,6 +29,27 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
         
+        #message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            font-family: sans-serif;
+            font-size: 18px;
+            text-align: center;
+            z-index: 999;
+            transition: opacity 0.5s ease;
+        }
+        
+        #message.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
         .github-info {
             background: rgba(255, 255, 255, 0.1);
             padding: 10px;
@@ -254,6 +275,9 @@
         Esta aplicación está diseñada para ejecutarse en GitHub Pages. Sigue las instrucciones debajo para configurarla.
     </div>
     
+    <!-- Mensaje inicial para ajustar la cámara -->
+    <div id="message">📷 Apunta tu cámara al marcador para comenzar</div>
+    
     <div id="scanning-overlay">
         <img class="transformers-logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBmaWxsPSIjZmZkNzAwIj48cGF0aCBkPSJNMjU2IDhDMTE5IDggOCAxMTkgOCAyNTZzMTExIDI0OCAyNDggMjQ4IDI0OC0xMTEgMjQ4LTI0OFMzOTMgOCAyNTYgOHptMCA0NDhjLTExMC41IDAtMjAwLTg5LjUtMjAwLTIwMFMxNDUuNSA1NiAyNTYgNTZzMjAwIDg5LjUgMjAwIDIwMC04OS41IDIwMC0yMDAgMjAweiIvPjxwYXRoIGQ9Ik0yNTYgMTQ0Yy0xNy43IDAtMzIgMTQuMy0zMiAzMnMxNC4zIDMyIDMyIDMyIDMyLTE0LjMgMzItMzItMTQuMy0zMi0zMi0zMnptNDAgMTQ0YzAgMTcuNy0xNC4zIDMyLTMyIDMyaC00OGMtMTcuNyAwLTMyLTE0LjMtMzItMzJ2LTY0YzAtMTcuNyAxNC4zLTMyIDMyLTMyaDQ4YzE3LjcgMCAzMiAxNC4zIDMyIDMydjY0eiIvPjwvc3ZnPg==" alt="Transformers">
         <div class="scanning-text">Enfoca la cámara hacia el objetivo de Transformers</div>
@@ -283,39 +307,45 @@
               vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
         
         <a-assets>
+            <!-- Modelos 3D -->
+            <a-asset-item id="optimusModel" src="./optimus.glb"></a-asset-item>
+            <a-asset-item id="bumblebeeModel" src="./bumblebee.glb"></a-asset-item>
+            <a-asset-item id="megatronModel" src="./megatron.glb"></a-asset-item>
+            
             <!-- Fondos personalizados para cada Transformer -->
-            <img id="optimuspng" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MDAgNTAwIiBmaWxsPSIjY2MyMTIxIj48cmVjdCB3aWR0aD0iNTAwIiBoZWlnaHQ9IjUwMCIgZmlsbD0iI2NjMjEyMSIvPjxjaXJjbGUgY3g9IjI1MCIgY3k9IjI1MCIgcj0iMTUwIiBmaWxsPSIjZmZkNzAwIi8+PHBhdGggZD0iTTE3NSAxNzVIMTc1djE1MEgxNzV6TTMyNSAxNzVIMzI1djE1MEgzMjV6TTI1MCAxMjV2MjUwTTEyNSAyNTBoMjUwIiBzdHJva2U9IiNjYzIxMjEiIHN0cm9rZS13aWR0aD0iMjAiLz48L3N2Zz4=" crossorigin="anonymous">
-            <img id="bumblebeepng" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MDAgNTAwIiBmaWxsPSIjZmZkNzAwIj48cmVjdCB3aWR0aD0iNTAwIiBoZWlnaHQ9IjUwMCIgZ illsbD0iI2ZmZDcwMCIvPjxyZWN0IHg9IjEwMCIgeT0iMTAwIiB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzMzMzMzMyIvPjxwb2x5Z29uIHBvaW50cz0iMjUwLDEwMCAzNTAsMjAwIDI1MCwzMDAgMTUwLDIwMCIgZmlsbD0iI2NjMjEyMSIvPjwvc3ZnPg==" crossorigin="anonymous">
-            <img id="megatronpng" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MDAgNTAwIiBmaWxsPSIjMzMzMzMzIj48cmVjdCB3aWR0aD0iNTAwIiBoZWlnaHQ9IjUwMCIgZmlsbD0iIzMzMzMzMyIvPjxwb2x5Z29uIHBvaW50cz0iMjUwLDc1IDMyNSwxNzUgMjUwLDI3NSAxNzUsMTc1IiBmaWxsPSIjN2I3YjdiIi8+PHBvbHlnb24gcG9pbnRzPSIxNzUsMTc1IDI1MCwyNzUgMzI1LDE3NSAyNTAsNzUiIHN0cm9rZT0iI2NjMjEyMSIgc3Ryb2tlLXdpZHRoPSIxNSIgZmlsbD0ibm9uZSIvPjxjaXJjbGUgY3g9IjI1MCIgY3k9IjM1MCIgcj0iNTAiIGZpbGw9IiNjYzIxMjEiLz48L3N2Zz4=" crossorigin="anonymous">
+            <img id="optimuspng" src="./optimuspng.jpg" crossorigin="anonymous">
+            <img id="bumblebeepng" src="./bumblebeepng.jpg" crossorigin="anonymous">
+            <img id="megatronpng" src="./megatronpng.jpg" crossorigin="anonymous">
         </a-assets>
 
         <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" 
                   raycaster="objects: .clickable"></a-camera>
 
         <!-- Contenedor único para el Transformer -->
-        <a-entity mindar-image-target="targetIndex: 0">
+        <a-entity mindar-image-target="targetIndex: 0" id="target-entity">
             <a-image id="background-image" src="#optimuspng" position="0 0 -0.1" scale="1 1 1" width="2" height="2"></a-image>
-            <a-entity id="transformer-container" class="clickable" click-handler>
+            
+            <!-- Touch plane para hacer clic -->
+            <a-plane id="touch-plane" class="clickable" position="0 0 0.05" rotation="0 0 0" width="3" height="3" color="#000" opacity="0" transparent="true"></a-plane>
+            
+            <a-entity id="transformer-container">
                 <!-- Optimus Prime (inicialmente visible) -->
-                <a-box position="0 0.5 0" color="#CC2121" scale="0.5 0.5 0.5" 
-                       animation="property: rotation; to: 0 360 0; loop: true; dur: 5000" 
-                       id="optimus-object" visible="true">
+                <a-entity id="optimus-object" visible="true" position="0 0.5 0" scale="0.5 0.5 0.5">
+                    <a-gltf-model src="#optimusModel" animation="property: rotation; to: 0 360 0; loop: true; dur: 5000"></a-gltf-model>
                     <a-text value="Optimus" align="center" position="0 -0.6 0.26" color="#FFD700" width="3"></a-text>
-                </a-box>
+                </a-entity>
                 
                 <!-- Bumblebee (inicialmente oculto) -->
-                <a-cylinder position="0 0.5 0" color="#FFD700" radius="0.3" height="0.5" 
-                            animation="property: rotation; to: 360 0 0; loop: true; dur: 3000" 
-                            id="bumblebee-object" visible="false">
+                <a-entity id="bumblebee-object" visible="false" position="0 0.5 0" scale="0.5 0.5 0.5">
+                    <a-gltf-model src="#bumblebeeModel" animation="property: rotation; to: 360 0 0; loop: true; dur: 3000"></a-gltf-model>
                     <a-text value="Bumblebee" align="center" position="0 -0.6 0.26" color="#333" width="3"></a-text>
-                </a-cylinder>
+                </a-entity>
                 
                 <!-- Megatron (inicialmente oculto) -->
-                <a-cone position="0 0.5 0" color="#333" radius-bottom="0.4" radius-top="0.1" height="0.8" 
-                        animation="property: position; dir: alternate; loop: true; dur: 2000; to: 0 0.8 0" 
-                        id="megatron-object" visible="false">
+                <a-entity id="megatron-object" visible="false" position="0 0.5 0" scale="0.5 0.5 0.5">
+                    <a-gltf-model src="#megatronModel" animation="property: position; dir: alternate; loop: true; dur: 2000; to: 0 0.8 0"></a-gltf-model>
                     <a-text value="Megatron" align="center" position="0 -0.8 0.26" color="#CC2121" width="3"></a-text>
-                </a-cone>
+                </a-entity>
             </a-entity>
         </a-entity>
     </a-scene>
@@ -325,8 +355,16 @@
         <p>Para ejecutar esta aplicación en GitHub Pages, sigue estos pasos:</p>
         <ol class="steps">
             <li>Crea un nuevo repositorio en GitHub</li>
-            <li>Sube este archivo HTML con el nombre <code>index.html</code></li>
-            <li>Asegúrate de tener un archivo <code>targets.mind</code> en el mismo directorio</li>
+            <li>Sube estos archivos: 
+                <code>index.html</code>, 
+                <code>targets.mind</code>, 
+                <code>optimus.glb</code>, 
+                <code>bumblebee.glb</code>, 
+                <code>megatron.glb</code>, 
+                <code>optimuspng.jpg</code>, 
+                <code>bumblebeepng.jpg</code>, 
+                <code>megatronpng.jpg</code>
+            </li>
             <li>Ve a la configuración del repositorio y activa GitHub Pages en la sección correspondiente</li>
             <li>Selecciona la rama principal (main o master) como fuente</li>
             <li>Tu aplicación estará disponible en: <code>https://[tu-usuario].github.io/[nombre-repositorio]</code></li>
@@ -335,7 +373,7 @@
         <h3>Notas importantes:</h3>
         <ul class="steps">
             <li>GitHub Pages requiere que el archivo se llame <code>index.html</code></li>
-            <li>Asegúrate de que el archivo <code>targets.mind</code> esté en el mismo directorio</li>
+            <li>Asegúrate de que todos los archivos estén en el mismo directorio</li>
             <li>La aplicación necesitará permisos de cámara, así que los usuarios deberán permitir el acceso</li>
             <li>Para mejores resultados, accede desde un dispositivo móvil con cámara</li>
         </ul>
@@ -350,9 +388,9 @@
             const detectionFeedback = document.querySelector('#detection-feedback');
             const modelSelector = document.querySelector('#model-selector');
             const modelButtons = document.querySelectorAll('.model-btn');
-            
-            const sceneEl = document.querySelector('a-scene');
-            let arSystem;
+            const message = document.querySelector('#message');
+            const targetEntity = document.querySelector('#target-entity');
+            const touchPlane = document.querySelector('#touch-plane');
             
             // Referencias a los modelos y fondo
             const optimusObject = document.querySelector('#optimus-object');
@@ -362,6 +400,28 @@
             
             // Modelo actual
             let currentModel = 'optimus';
+            
+            // Ocultar mensaje cuando se detecta el target
+            targetEntity.addEventListener('targetFound', event => {
+                console.log('Target encontrado');
+                message.classList.add('hidden');
+                detectionFeedback.textContent = '¡Transformer detectado!';
+                detectionFeedback.classList.add('visible');
+                
+                // Ocultar el feedback después de 2 segundos
+                setTimeout(() => {
+                    detectionFeedback.classList.remove('visible');
+                }, 2000);
+            });
+            
+            // Mostrar mensaje cuando se pierde el target
+            targetEntity.addEventListener('targetLost', event => {
+                console.log('Target perdido');
+                message.classList.remove('hidden');
+            });
+            
+            const sceneEl = document.querySelector('a-scene');
+            let arSystem;
             
             sceneEl.addEventListener('loaded', function() {
                 arSystem = sceneEl.systems["mindar-image-system"];
@@ -417,24 +477,6 @@
                 currentModel = model;
             }
             
-            // Eventos de detección de target
-            const target = document.querySelector('[mindar-image-target]');
-            
-            target.addEventListener('targetFound', event => {
-                console.log('Target encontrado');
-                detectionFeedback.textContent = '¡Transformer detectado!';
-                detectionFeedback.classList.add('visible');
-                
-                // Ocultar el feedback después de 2 segundos
-                setTimeout(() => {
-                    detectionFeedback.classList.remove('visible');
-                }, 2000);
-            });
-            
-            target.addEventListener('targetLost', event => {
-                console.log('Target perdido');
-            });
-            
             // Componente para manejar clicks en el objeto 3D
             AFRAME.registerComponent('click-handler', {
                 init: function () {
@@ -456,7 +498,7 @@
                         });
                         
                         // Efecto visual de click
-                        const transformerContainer = this.el;
+                        const transformerContainer = document.querySelector('#transformer-container');
                         const originalScale = transformerContainer.object3D.scale.clone();
                         const targetScale = originalScale.clone().multiplyScalar(1.2);
                         
