@@ -13,9 +13,10 @@
             margin: 0;
             padding: 0;
             font-family: 'Alice', serif;
-            background-color: #000;
+            background: linear-gradient(to bottom, #111, #000);
             color: white;
             overflow: hidden;
+            height: 100vh;
         }
         
         #message {
@@ -23,15 +24,19 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.85);
             color: white;
-            padding: 20px 30px;
-            border-radius: 10px;
+            padding: 25px 35px;
+            border-radius: 15px;
             font-family: 'Alice', serif;
-            font-size: 18px;
+            font-size: 22px;
             text-align: center;
             z-index: 999;
             transition: opacity 0.5s ease;
+            border: 2px solid #1E90FF;
+            box-shadow: 0 0 20px rgba(30, 144, 255, 0.6);
+            max-width: 80%;
+            backdrop-filter: blur(5px);
         }
         
         #message.hidden {
@@ -51,21 +56,23 @@
         }
         
         button {
-            padding: 12px 25px;
-            background: rgba(0, 50, 100, 0.7);
-            border: 2px solid rgba(30, 144, 255, 0.7);
-            border-radius: 25px;
+            padding: 14px 28px;
+            background: rgba(0, 50, 100, 0.8);
+            border: 2px solid rgba(30, 144, 255, 0.8);
+            border-radius: 30px;
             color: white;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
-            font-size: 16px;
+            font-size: 18px;
             font-family: 'Alice', serif;
+            box-shadow: 0 0 15px rgba(30, 144, 255, 0.5);
         }
         
         button:hover {
-            background: rgba(30, 144, 255, 0.5);
+            background: rgba(30, 144, 255, 0.6);
             transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(30, 144, 255, 0.7);
         }
         
         .detection-feedback {
@@ -74,14 +81,18 @@
             left: 0;
             width: 100%;
             text-align: center;
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
             opacity: 0;
             transition: opacity 0.5s;
             z-index: 1000;
             color: #1E90FF;
-            text-shadow: 1px 1px 3px #000;
+            text-shadow: 1px 1px 5px #000;
             font-family: 'Alice', serif;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 12px;
+            border-bottom: 2px solid #1E90FF;
+            backdrop-filter: blur(5px);
         }
         
         .detection-feedback.visible {
@@ -90,13 +101,18 @@
         
         .instructions {
             position: fixed;
-            bottom: 80px;
+            bottom: 90px;
             width: 100%;
             text-align: center;
-            font-size: 16px;
-            color: #ccc;
+            font-size: 18px;
+            color: #ddd;
             z-index: 1000;
             font-family: 'Alice', serif;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-top: 1px solid #1E90FF;
+            border-bottom: 1px solid #1E90FF;
+            backdrop-filter: blur(5px);
         }
         
         .model-selector {
@@ -105,54 +121,84 @@
             right: 20px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
             z-index: 1000;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 15px;
-            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 18px;
+            border-radius: 12px;
             border: 1px solid #1E90FF;
+            box-shadow: 0 0 15px rgba(30, 144, 255, 0.5);
+            backdrop-filter: blur(5px);
         }
         
         .model-btn {
-            padding: 8px 15px;
-            background: rgba(0, 50, 100, 0.5);
+            padding: 10px 18px;
+            background: rgba(0, 50, 100, 0.6);
             border: 1px solid #1E90FF;
-            border-radius: 5px;
+            border-radius: 8px;
             color: white;
             cursor: pointer;
             transition: all 0.3s;
             font-family: 'Alice', serif;
+            text-align: center;
+            font-size: 16px;
         }
         
         .model-btn:hover, .model-btn.active {
-            background: rgba(30, 144, 255, 0.3);
+            background: rgba(30, 144, 255, 0.4);
+            transform: scale(1.05);
         }
         
         .model-btn.optimus {
-            color: #CC2121;
+            color: #FF4D4D;
         }
         
         .model-btn.bumblebee {
-            color: #FFD700;
+            color: #FFEA00;
         }
         
         .model-btn.megatron {
-            color: #7b7b7b;
+            color: #A0A0A0;
         }
         
         @media (max-width: 768px) {
             .model-selector {
                 top: auto;
-                bottom: 150px;
+                bottom: 160px;
                 right: 10px;
                 left: 10px;
                 flex-direction: row;
                 justify-content: center;
             }
+            
+            #message {
+                font-size: 18px;
+                padding: 20px 25px;
+            }
+            
+            button {
+                padding: 12px 22px;
+                font-size: 16px;
+            }
+        }
+        
+        .title {
+            font-family: 'Alice', serif;
+            font-size: 36px;
+            color: #1E90FF;
+            text-align: center;
+            margin: 20px 0;
+            text-shadow: 0 0 12px rgba(30, 144, 255, 0.8);
+            width: 100%;
+            padding: 12px;
+            position: relative;
+            z-index: 100;
         }
     </style>
 </head>
 <body>
+    <div class="title">Transformers AR Experience</div>
+    
     <!-- Mensaje inicial para ajustar la cámara -->
     <div id="message">📷 Apunta tu cámara al marcador para comenzar</div>
     
@@ -192,29 +238,32 @@
 
         <!-- Contenedor único para el Transformer -->
         <a-entity mindar-image-target="targetIndex: 0" id="target-entity">
-            <!-- Fondo (más atrás y más pequeño) -->
-            <a-image id="background-image" src="#optimuspng" position="0 -0.2 -0.5" scale="1.5 1.5 1.5" width="1.5" height="1.5"></a-image>
+            <!-- Fondo (más pequeño y detrás de los modelos) -->
+            <a-image id="background-image" src="#optimuspng" position="0 -0.5 -1" scale="1.2 1.2 1.2" width="1.2" height="1.2"></a-image>
             
             <!-- Touch plane para hacer clic -->
-            <a-plane id="touch-plane" class="clickable" position="0 -0.2 0" rotation="0 0 0" width="2.5" height="2.5" color="#000" opacity="0" transparent="true"></a-plane>
+            <a-plane id="touch-plane" class="clickable" position="0 -0.5 0" rotation="0 0 0" width="2.5" height="2.5" color="#000" opacity="0" transparent="true"></a-plane>
             
-            <a-entity id="transformer-container" position="0 -0.2 0">
-                <!-- Optimus Prime (inicialmente visible, más pequeño) -->
+            <a-entity id="transformer-container" position="0 -0.5 0">
+                <!-- Optimus Prime (inicialmente visible) -->
                 <a-entity id="optimus-object" visible="true" position="0 0 0" scale="0.10 0.10 0.10">
                     <a-gltf-model src="#optimusModel" animation="property: rotation; to: 0 360 0; loop: true; dur: 8000"></a-gltf-model>
-                    <a-text value="Optimus Prime" align="center" position="0 1.8 0" color="#1E90FF" width="5" scale="2 2 2"></a-text>
+                    <!-- Nombre encima del modelo -->
+                    <a-text value="Optimus Prime" align="center" position="0 3.5 0" color="#1E90FF" width="8" scale="2.5 2.5 2.5" font="alice"></a-text>
                 </a-entity>
                 
-                <!-- Bumblebee (inicialmente oculto, más pequeño) -->
-                <a-entity id="bumblebee-object" visible="false" position="0 0 0" scale="0.005 0.005 0.005">
+                <!-- Bumblebee (inicialmente oculto) -->
+                <a-entity id="bumblebee-object" visible="false" position="0 0 0" scale="0.0010 0.0010 0.0010">
                     <a-gltf-model src="#bumblebeeModel" animation="property: rotation; to: 0 360 0; loop: true; dur: 8000"></a-gltf-model>
-                    <a-text value="Bumblebee" align="center" position="0 1.8 0" color="#1E90FF" width="5" scale="2 2 2"></a-text>
+                    <!-- Nombre encima del modelo -->
+                    <a-text value="Bumblebee" align="center" position="0 3.5 0" color="#1E90FF" width="8" scale="2.5 2.5 2.5" font="alice"></a-text>
                 </a-entity>
                 
-                <!-- Megatron (inicialmente oculto, más pequeño) -->
-                <a-entity id="megatron-object" visible="false" position="0 0 0" scale="0.005 0.005 0.005">
+                <!-- Megatron (inicialmente oculto) -->
+                <a-entity id="megatron-object" visible="false" position="0 0 0" scale="0.0025 0.0025 0.0025">
                     <a-gltf-model src="#megatronModel" animation="property: rotation; to: 0 360 0; loop: true; dur: 8000"></a-gltf-model>
-                    <a-text value="Megatron" align="center" position="0 1.8 0" color="#1E90FF" width="5" scale="2 2 2"></a-text>
+                    <!-- Nombre encima del modelo -->
+                    <a-text value="Megatron" align="center" position="0 3.5 0" color="#1E90FF" width="8" scale="2.5 2.5 2.5" font="alice"></a-text>
                 </a-entity>
             </a-entity>
         </a-entity>
@@ -222,25 +271,25 @@
         <!-- Interfaz A-Frame (aful) -->
         <a-entity id="ui-container" position="0 0 0">
             <!-- Panel de información (azul) -->
-            <a-plane id="info-panel" position="0 -1.4 0" width="2" height="0.4" color="#003366" opacity="0.8" rotation="0 0 0">
-                <a-text value="Transformers AR" align="center" position="0 0 0.01" color="#1E90FF" width="3" font="alice"></a-text>
+            <a-plane id="info-panel" position="0 -1.8 0" width="2.2" height="0.5" color="#003366" opacity="0.9" rotation="0 0 0">
+                <a-text value="Transformers AR" align="center" position="0 0 0.01" color="#1E90FF" width="3.5" font="alice"></a-text>
             </a-plane>
             
             <!-- Selector de modelos en A-Frame (azul) -->
-            <a-entity id="aframe-model-selector" position="0 -1.9 0">
-                <a-circle class="model-selector-btn optimus active" position="-0.6 0 0" radius="0.15" color="#003366" 
+            <a-entity id="aframe-model-selector" position="0 -2.4 0">
+                <a-circle class="model-selector-btn optimus active" position="-0.7 0 0" radius="0.17" color="#003366" 
                           data-model="optimus" event-set__click="scale: 0.9 0.9 0.9; scaleTo: 1 1 1; dur: 200">
-                    <a-text value="O" align="center" position="0 0 0.01" color="#FFF" width="1" font="alice"></a-text>
+                    <a-text value="O" align="center" position="0 0 0.01" color="#FFF" width="1.2" font="alice"></a-text>
                 </a-circle>
                 
-                <a-circle class="model-selector-btn bumblebee" position="0 0 0" radius="0.15" color="#003366" 
+                <a-circle class="model-selector-btn bumblebee" position="0 0 0" radius="0.17" color="#003366" 
                           data-model="bumblebee" event-set__click="scale: 0.9 0.9 0.9; scaleTo: 1 1 1; dur: 200">
-                    <a-text value="B" align="center" position="0 0 0.01" color="#FFD700" width="1" font="alice"></a-text>
+                    <a-text value="B" align="center" position="0 0 0.01" color="#FFD700" width="1.2" font="alice"></a-text>
                 </a-circle>
                 
-                <a-circle class="model-selector-btn megatron" position="0.6 0 0" radius="0.15" color="#003366" 
+                <a-circle class="model-selector-btn megatron" position="0.7 0 0" radius="0.17" color="#003366" 
                           data-model="megatron" event-set__click="scale: 0.9 0.9 0.9; scaleTo: 1 1 1; dur: 200">
-                    <a-text value="M" align="center" position="0 0 0.01" color="#CC2121" width="1" font="alice"></a-text>
+                    <a-text value="M" align="center" position="0 0 0.01" color="#CC2121" width="1.2" font="alice"></a-text>
                 </a-circle>
             </a-entity>
         </a-entity>
