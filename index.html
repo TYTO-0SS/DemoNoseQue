@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transformers AR - GitHub Pages</title>
+    <title>Transformers AR</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.0.0/dist/aframe-extras.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
@@ -14,19 +14,7 @@
             font-family: 'Arial', sans-serif;
             background-color: #000;
             color: white;
-            text-align: center;
-            overflow-x: hidden;
-        }
-        
-        .header {
-            padding: 15px;
-            background: linear-gradient(to right, #b32e2e, #2e4ab3);
-        }
-        
-        h1 {
-            margin: 0;
-            font-size: 28px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            overflow: hidden;
         }
         
         #message {
@@ -48,72 +36,6 @@
         #message.hidden {
             opacity: 0;
             pointer-events: none;
-        }
-        
-        .github-info {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px;
-            border-radius: 8px;
-            margin: 10px auto;
-            max-width: 600px;
-            font-size: 14px;
-        }
-        
-        #scanning-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s;
-        }
-        
-        #scanning-overlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .scanning-text {
-            font-size: 24px;
-            margin-bottom: 20px;
-            text-align: center;
-            max-width: 80%;
-            color: #FFD700;
-        }
-        
-        .scanning-animation {
-            width: 200px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #4db8ff, transparent);
-            animation: scanning 2s infinite;
-            margin-bottom: 30px;
-        }
-        
-        @keyframes scanning {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-        
-        .target-example {
-            width: 200px;
-            height: 200px;
-            border: 3px solid #FFD700;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
-            margin: 0 auto;
-        }
-        
-        .target-example img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
         }
         
         .controls {
@@ -146,7 +68,7 @@
         
         .detection-feedback {
             position: fixed;
-            top: 80px;
+            top: 20px;
             left: 0;
             width: 100%;
             text-align: center;
@@ -173,15 +95,9 @@
             z-index: 1000;
         }
         
-        .transformers-logo {
-            max-width: 250px;
-            margin-bottom: 20px;
-            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.7));
-        }
-        
         .model-selector {
             position: fixed;
-            top: 120px;
+            top: 20px;
             right: 20px;
             display: flex;
             flex-direction: column;
@@ -219,36 +135,6 @@
             color: #7b7b7b;
         }
         
-        .github-pages-info {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            text-align: left;
-        }
-        
-        .github-pages-info h3 {
-            color: #FFD700;
-            border-bottom: 1px solid #FFD700;
-            padding-bottom: 5px;
-        }
-        
-        .steps {
-            margin-left: 20px;
-        }
-        
-        .steps li {
-            margin-bottom: 10px;
-        }
-        
-        code {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-family: monospace;
-        }
-        
         @media (max-width: 768px) {
             .model-selector {
                 top: auto;
@@ -258,38 +144,16 @@
                 flex-direction: row;
                 justify-content: center;
             }
-            
-            .github-pages-info {
-                margin: 10px;
-                font-size: 14px;
-            }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Transformers - Realidad Aumentada Interactiva</h1>
-    </div>
-    
-    <div class="github-info">
-        Esta aplicación está diseñada para ejecutarse en GitHub Pages. Sigue las instrucciones debajo para configurarla.
-    </div>
-    
     <!-- Mensaje inicial para ajustar la cámara -->
     <div id="message">📷 Apunta tu cámara al marcador para comenzar</div>
     
-    <div id="scanning-overlay">
-        <img class="transformers-logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBmaWxsPSIjZmZkNzAwIj48cGF0aCBkPSJNMjU2IDhDMTE5IDggOCAxMTkgOCAyNTZzMTExIDI0OCAyNDggMjQ4IDI0OC0xMTEgMjQ4LTI0OFMzOTMgOCAyNTYgOHptMCA0NDhjLTExMC41IDAtMjAwLTg5LjUtMjAwLTIwMFMxNDUuNSA1NiAyNTYgNTZzMjAwIDg5LjUgMjAwIDIwMC04OS41IDIwMC0yMDAgMjAweiIvPjxwYXRoIGQ9Ik0yNTYgMTQ0Yy0xNy43IDAtMzIgMTQuMy0zMiAzMnMxNC4zIDMyIDMyIDMyIDMyLTE0LjMgMzItMzItMTQuMy0zMi0zMi0zMnptNDAgMTQ0YzAgMTcuNy0xNC4zIDMyLTMyIDMyaC00OGMtMTcuNyAwLTMyLTE0LjMtMzItMzJ2LTY0YzAtMTcuNyAxNC4zLTMyIDMyLTMyaDQ4YzE3LjcgMCAzMiAxNC4zIDMyIDMydjY0eiIvPjwvc3ZnPg==" alt="Transformers">
-        <div class="scanning-text">Enfoca la cámara hacia el objetivo de Transformers</div>
-        <div class="scanning-animation"></div>
-        <div class="target-example">
-            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiBmaWxsPSIjZmZkNzAwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzAwMDAwMCIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iNzAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZDcwMCIgc3Ryb2tlLXdpZHRoPSI4Ii8+PHBhdGggZD0iTTcwIDcwSDcwdjYwSDcwek0xMzAgNzBIMTMwdjYwSDEzMHpNMTAwIDUwdjEwME01MCAxMDBoMTAwIiBzdHJva2U9IiNmZmQ3MDAiIHN0cm9rZS13aWR0aD0iOCIvPjwvc3ZnPg==" alt="Transformers Target">
-        </div>
-    </div>
-    
     <div class="detection-feedback" id="detection-feedback">¡Transformer detectado!</div>
     
-    <div class="instructions">Haz clic en el Transformer para cambiarlo o interactuar con él</div>
+    <div class="instructions">Haz clic en el Transformer para cambiarlo</div>
     
     <div class="model-selector" id="model-selector">
         <div class="model-btn optimus active" data-model="optimus">Optimus Prime</div>
@@ -302,7 +166,7 @@
         <button id="stop-button">Detener RA</button>
     </div>
 
-    <a-scene mindar-image="imageTargetSrc: ./targets.mind; uiScanning: #scanning-overlay;" 
+    <a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: false;" 
               color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" 
               vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
         
@@ -323,68 +187,65 @@
 
         <!-- Contenedor único para el Transformer -->
         <a-entity mindar-image-target="targetIndex: 0" id="target-entity">
-            <a-image id="background-image" src="#optimuspng" position="0 0 -0.1" scale="1 1 1" width="2" height="2"></a-image>
+            <!-- Fondo (más atrás) -->
+            <a-image id="background-image" src="#optimuspng" position="0 0 -0.5" scale="2 2 2" width="2" height="2"></a-image>
             
             <!-- Touch plane para hacer clic -->
-            <a-plane id="touch-plane" class="clickable" position="0 0 0.05" rotation="0 0 0" width="3" height="3" color="#000" opacity="0" transparent="true"></a-plane>
+            <a-plane id="touch-plane" class="clickable" position="0 0 0" rotation="0 0 0" width="2.5" height="2.5" color="#000" opacity="0" transparent="true"></a-plane>
             
-            <a-entity id="transformer-container">
+            <a-entity id="transformer-container" position="0 0 0">
                 <!-- Optimus Prime (inicialmente visible) -->
-                <a-entity id="optimus-object" visible="true" position="0 0.5 0" scale="0.5 0.5 0.5">
-                    <a-gltf-model src="#optimusModel" animation="property: rotation; to: 0 360 0; loop: true; dur: 5000"></a-gltf-model>
-                    <a-text value="Optimus" align="center" position="0 -0.6 0.26" color="#FFD700" width="3"></a-text>
+                <a-entity id="optimus-object" visible="true" position="0 0 0" scale="0.25 0.25 0.25">
+                    <a-gltf-model src="#optimusModel" animation="property: rotation; to: 0 360 0; loop: true; dur: 8000"></a-gltf-model>
+                    <a-text value="Optimus Prime" align="center" position="0 1.8 0" color="#FFD700" width="5" scale="2 2 2"></a-text>
                 </a-entity>
                 
                 <!-- Bumblebee (inicialmente oculto) -->
-                <a-entity id="bumblebee-object" visible="false" position="0 0.5 0" scale="0.5 0.5 0.5">
-                    <a-gltf-model src="#bumblebeeModel" animation="property: rotation; to: 360 0 0; loop: true; dur: 3000"></a-gltf-model>
-                    <a-text value="Bumblebee" align="center" position="0 -0.6 0.26" color="#333" width="3"></a-text>
+                <a-entity id="bumblebee-object" visible="false" position="0 0 0" scale="0.25 0.25 0.25">
+                    <a-gltf-model src="#bumblebeeModel" animation="property: rotation; to: 0 360 0; loop: true; dur: 8000"></a-gltf-model>
+                    <a-text value="Bumblebee" align="center" position="0 1.8 0" color="#FFD700" width="5" scale="2 2 2"></a-text>
                 </a-entity>
                 
                 <!-- Megatron (inicialmente oculto) -->
-                <a-entity id="megatron-object" visible="false" position="0 0.5 0" scale="0.5 0.5 0.5">
-                    <a-gltf-model src="#megatronModel" animation="property: position; dir: alternate; loop: true; dur: 2000; to: 0 0.8 0"></a-gltf-model>
-                    <a-text value="Megatron" align="center" position="0 -0.8 0.26" color="#CC2121" width="3"></a-text>
+                <a-entity id="megatron-object" visible="false" position="0 0 0" scale="0.25 0.25 0.25">
+                    <a-gltf-model src="#megatronModel" animation="property: rotation; to: 0 360 0; loop: true; dur: 8000"></a-gltf-model>
+                    <a-text value="Megatron" align="center" position="0 1.8 0" color="#FFD700" width="5" scale="2 2 2"></a-text>
                 </a-entity>
             </a-entity>
         </a-entity>
-    </a-scene>
 
-    <div class="github-pages-info">
-        <h3>Instrucciones para GitHub Pages</h3>
-        <p>Para ejecutar esta aplicación en GitHub Pages, sigue estos pasos:</p>
-        <ol class="steps">
-            <li>Crea un nuevo repositorio en GitHub</li>
-            <li>Sube estos archivos: 
-                <code>index.html</code>, 
-                <code>targets.mind</code>, 
-                <code>optimus.glb</code>, 
-                <code>bumblebee.glb</code>, 
-                <code>megatron.glb</code>, 
-                <code>optimuspng.jpg</code>, 
-                <code>bumblebeepng.jpg</code>, 
-                <code>megatronpng.jpg</code>
-            </li>
-            <li>Ve a la configuración del repositorio y activa GitHub Pages en la sección correspondiente</li>
-            <li>Selecciona la rama principal (main o master) como fuente</li>
-            <li>Tu aplicación estará disponible en: <code>https://[tu-usuario].github.io/[nombre-repositorio]</code></li>
-        </ol>
-        
-        <h3>Notas importantes:</h3>
-        <ul class="steps">
-            <li>GitHub Pages requiere que el archivo se llame <code>index.html</code></li>
-            <li>Asegúrate de que todos los archivos estén en el mismo directorio</li>
-            <li>La aplicación necesitará permisos de cámara, así que los usuarios deberán permitir el acceso</li>
-            <li>Para mejores resultados, accede desde un dispositivo móvil con cámara</li>
-        </ul>
-    </div>
+        <!-- Interfaz A-Frame (aful) -->
+        <a-entity id="ui-container" position="0 0 0">
+            <!-- Panel de información -->
+            <a-plane id="info-panel" position="0 -1.2 0" width="2" height="0.4" color="#222" opacity="0.8" rotation="0 0 0">
+                <a-text value="Transformers AR" align="center" position="0 0 0.01" color="#FFD700" width="3"></a-text>
+            </a-plane>
+            
+            <!-- Selector de modelos en A-Frame -->
+            <a-entity id="aframe-model-selector" position="0 -1.7 0">
+                <a-circle class="model-selector-btn optimus active" position="-0.6 0 0" radius="0.15" color="#CC2121" 
+                          data-model="optimus" event-set__click="scale: 0.9 0.9 0.9; scaleTo: 1 1 1; dur: 200">
+                    <a-text value="O" align="center" position="0 0 0.01" color="#FFF" width="1"></a-text>
+                </a-circle>
+                
+                <a-circle class="model-selector-btn bumblebee" position="0 0 0" radius="0.15" color="#FFD700" 
+                          data-model="bumblebee" event-set__click="scale: 0.9 0.9 0.9; scaleTo: 1 1 1; dur: 200">
+                    <a-text value="B" align="center" position="0 0 0.01" color="#333" width="1"></a-text>
+                </a-circle>
+                
+                <a-circle class="model-selector-btn megatron" position="0.6 0 0" radius="0.15" color="#333" 
+                          data-model="megatron" event-set__click="scale: 0.9 0.9 0.9; scaleTo: 1 1 1; dur: 200">
+                    <a-text value="M" align="center" position="0 0 0.01" color="#CC2121" width="1"></a-text>
+                </a-circle>
+            </a-entity>
+        </a-entity>
+    </a-scene>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Configuración de controles
             const startButton = document.querySelector('#start-button');
             const stopButton = document.querySelector('#stop-button');
-            const scanningOverlay = document.querySelector('#scanning-overlay');
             const detectionFeedback = document.querySelector('#detection-feedback');
             const modelSelector = document.querySelector('#model-selector');
             const modelButtons = document.querySelectorAll('.model-btn');
@@ -397,6 +258,9 @@
             const bumblebeeObject = document.querySelector('#bumblebee-object');
             const megatronObject = document.querySelector('#megatron-object');
             const backgroundImage = document.querySelector('#background-image');
+            
+            // Referencias a los botones de A-Frame
+            const aframeModelButtons = document.querySelectorAll('.model-selector-btn');
             
             // Modelo actual
             let currentModel = 'optimus';
@@ -429,17 +293,18 @@
             
             startButton.addEventListener('click', () => {
                 arSystem.start();
-                scanningOverlay.classList.add('hidden');
                 modelSelector.style.display = 'flex';
+                message.textContent = "Buscando objetivo...";
             });
             
             stopButton.addEventListener('click', () => {
                 arSystem.stop();
-                scanningOverlay.classList.remove('hidden');
                 modelSelector.style.display = 'none';
+                message.classList.remove('hidden');
+                message.textContent = "📷 Apunta tu cámara al marcador para comenzar";
             });
             
-            // Cambiar modelo desde los botones
+            // Cambiar modelo desde los botones HTML
             modelButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const model = this.getAttribute('data-model');
@@ -448,6 +313,44 @@
                     // Actualizar botones activos
                     modelButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
+                    
+                    // Actualizar botones de A-Frame
+                    aframeModelButtons.forEach(btn => {
+                        if (btn.getAttribute('data-model') === model) {
+                            btn.setAttribute('color', '#FFD700');
+                        } else {
+                            const color = btn.getAttribute('data-model') === 'optimus' ? '#CC2121' : 
+                                         btn.getAttribute('data-model') === 'bumblebee' ? '#FFD700' : '#333';
+                            btn.setAttribute('color', color);
+                        }
+                    });
+                });
+            });
+            
+            // Cambiar modelo desde los botones de A-Frame
+            aframeModelButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const model = this.getAttribute('data-model');
+                    changeModel(model);
+                    
+                    // Actualizar botones activos HTML
+                    modelButtons.forEach(btn => {
+                        btn.classList.remove('active');
+                        if (btn.getAttribute('data-model') === model) {
+                            btn.classList.add('active');
+                        }
+                    });
+                    
+                    // Actualizar botones de A-Frame
+                    aframeModelButtons.forEach(btn => {
+                        if (btn.getAttribute('data-model') === model) {
+                            btn.setAttribute('color', '#FFD700');
+                        } else {
+                            const color = btn.getAttribute('data-model') === 'optimus' ? '#CC2121' : 
+                                         btn.getAttribute('data-model') === 'bumblebee' ? '#FFD700' : '#333';
+                            btn.setAttribute('color', color);
+                        }
+                    });
                 });
             });
             
@@ -489,11 +392,22 @@
                         
                         changeModel(nextModel);
                         
-                        // Actualizar botones activos
+                        // Actualizar botones activos HTML
                         modelButtons.forEach(btn => {
                             btn.classList.remove('active');
                             if (btn.getAttribute('data-model') === nextModel) {
                                 btn.classList.add('active');
+                            }
+                        });
+                        
+                        // Actualizar botones de A-Frame
+                        aframeModelButtons.forEach(btn => {
+                            if (btn.getAttribute('data-model') === nextModel) {
+                                btn.setAttribute('color', '#FFD700');
+                            } else {
+                                const color = btn.getAttribute('data-model') === 'optimus' ? '#CC2121' : 
+                                             btn.getAttribute('data-model') === 'bumblebee' ? '#FFD700' : '#333';
+                                btn.setAttribute('color', color);
                             }
                         });
                         
@@ -530,8 +444,7 @@
             
             sceneEl.addEventListener("arError", (event) => {
                 console.log("Error al inicializar MindAR");
-                scanningOverlay.querySelector('.scanning-text').textContent = 
-                    "Error al acceder a la cámara. Asegúrate de dar los permisos necesarios.";
+                message.textContent = "Error al acceder a la cámara. Asegúrate de dar los permisos necesarios.";
             });
         });
     </script>
