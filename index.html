@@ -1,23 +1,497 @@
-
-<html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformers AR - GitHub Pages</title>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.0.0/dist/aframe-extras.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-  </head>
-  <body>
-    <a-scene mindar-image="imageTargetSrc: ./targets.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
-      <a-assets>
-        <img id="card" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/card-example/card.png" />
-        <a-asset-item id="avatarModel" src="./ayudaa.glb"></a-asset-item>
-      </a-assets>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #000;
+            color: white;
+            text-align: center;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            padding: 15px;
+            background: linear-gradient(to right, #b32e2e, #2e4ab3);
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .github-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px auto;
+            max-width: 600px;
+            font-size: 14px;
+        }
+        
+        #scanning-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+        
+        #scanning-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .scanning-text {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            max-width: 80%;
+            color: #FFD700;
+        }
+        
+        .scanning-animation {
+            width: 200px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #4db8ff, transparent);
+            animation: scanning 2s infinite;
+            margin-bottom: 30px;
+        }
+        
+        @keyframes scanning {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .target-example {
+            width: 200px;
+            height: 200px;
+            border: 3px solid #FFD700;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+            margin: 0 auto;
+        }
+        
+        .target-example img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            z-index: 1000;
+        }
+        
+        button {
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 215, 0, 0.7);
+            border-radius: 25px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+        
+        button:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .detection-feedback {
+            position: fixed;
+            top: 80px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.5s;
+            z-index: 1000;
+            color: #FFD700;
+            text-shadow: 1px 1px 3px #000;
+        }
+        
+        .detection-feedback.visible {
+            opacity: 1;
+        }
+        
+        .instructions {
+            position: fixed;
+            bottom: 80px;
+            width: 100%;
+            text-align: center;
+            font-size: 16px;
+            color: #ccc;
+            z-index: 1000;
+        }
+        
+        .transformers-logo {
+            max-width: 250px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.7));
+        }
+        
+        .model-selector {
+            position: fixed;
+            top: 120px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #FFD700;
+        }
+        
+        .model-btn {
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #FFD700;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .model-btn:hover, .model-btn.active {
+            background: rgba(255, 215, 0, 0.3);
+        }
+        
+        .model-btn.optimus {
+            color: #CC2121;
+        }
+        
+        .model-btn.bumblebee {
+            color: #FFD700;
+        }
+        
+        .model-btn.megatron {
+            color: #7b7b7b;
+        }
+        
+        .github-pages-info {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            text-align: left;
+        }
+        
+        .github-pages-info h3 {
+            color: #FFD700;
+            border-bottom: 1px solid #FFD700;
+            padding-bottom: 5px;
+        }
+        
+        .steps {
+            margin-left: 20px;
+        }
+        
+        .steps li {
+            margin-bottom: 10px;
+        }
+        
+        code {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        
+        @media (max-width: 768px) {
+            .model-selector {
+                top: auto;
+                bottom: 150px;
+                right: 10px;
+                left: 10px;
+                flex-direction: row;
+                justify-content: center;
+            }
+            
+            .github-pages-info {
+                margin: 10px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Transformers - Realidad Aumentada Interactiva</h1>
+    </div>
+    
+    <div class="github-info">
+        Esta aplicación está diseñada para ejecutarse en GitHub Pages. Sigue las instrucciones debajo para configurarla.
+    </div>
+    
+    <div id="scanning-overlay">
+        <img class="transformers-logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBmaWxsPSIjZmZkNzAwIj48cGF0aCBkPSJNMjU2IDhDMTE5IDggOCAxMTkgOCAyNTZzMTExIDI0OCAyNDggMjQ4IDI0OC0xMTEgMjQ4LTI0OFMzOTMgOCAyNTYgOHptMCA0NDhjLTExMC41IDAtMjAwLTg5LjUtMjAwLTIwMFMxNDUuNSA1NiAyNTYgNTZzMjAwIDg5LjUgMjAwIDIwMC04OS41IDIwMC0yMDAgMjAweiIvPjxwYXRoIGQ9Ik0yNTYgMTQ0Yy0xNy43IDAtMzIgMTQuMy0zMiAzMnMxNC4zIDMyIDMyIDMyIDMyLTE0LjMgMzItMzItMTQuMy0zMi0zMi0zMnptNDAgMTQ0YzAgMTcuNy0xNC4zIDMyLTMyIDMyaC00OGMtMTcuNyAwLTMyLTE0LjMtMzItMzJ2LTY0YzAtMTcuNyAxNC4zLTMyIDMyLTMyaDQ4YzE3LjcgMCAzMiAxNC4zIDMyIDMydjY0eiIvPjwvc3ZnPg==" alt="Transformers">
+        <div class="scanning-text">Enfoca la cámara hacia el objetivo de Transformers</div>
+        <div class="scanning-animation"></div>
+        <div class="target-example">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiBmaWxsPSIjZmZkNzAwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzAwMDAwMCIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iNzAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZDcwMCIgc3Ryb2tlLXdpZHRoPSI4Ii8+PHBhdGggZD0iTTcwIDcwSDcwdjYwSDcwek0xMzAgNzBIMTMwdjYwSDEzMHpNMTAwIDUwdjEwME01MCAxMDBoMTAwIiBzdHJva2U9IiNmZmQ3MDAiIHN0cm9rZS13aWR0aD0iOCIvPjwvc3ZnPg==" alt="Transformers Target">
+        </div>
+    </div>
+    
+    <div class="detection-feedback" id="detection-feedback">¡Transformer detectado!</div>
+    
+    <div class="instructions">Haz clic en el Transformer para cambiarlo o interactuar con él</div>
+    
+    <div class="model-selector" id="model-selector">
+        <div class="model-btn optimus active" data-model="optimus">Optimus Prime</div>
+        <div class="model-btn bumblebee" data-model="bumblebee">Bumblebee</div>
+        <div class="model-btn megatron" data-model="megatron">Megatron</div>
+    </div>
+    
+    <div class="controls">
+        <button id="start-button">Iniciar RA</button>
+        <button id="stop-button">Detener RA</button>
+    </div>
 
-      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-      <a-entity mindar-image-target="targetIndex: 0">
-        <a-plane src="#card" position="0 0 0" height="0.552" width="1" rotation="0 0 0"></a-plane>
-        <a-gltf-model rotation="0 0 0 " position="0 0 0.1" scale="0.005 0.005 0.005
-      " src="#avatarModel" animation="property: position; to: 0 0.1 0.1; dur: 1000; easing: easeInOutQuad; loop: true; dir: alternate">
-      </a-entity>
+    <a-scene mindar-image="imageTargetSrc: ./targets.mind; uiScanning: #scanning-overlay;" 
+              color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" 
+              vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+        
+        <a-assets>
+            <!-- Fondos personalizados para cada Transformer -->
+            <img id="optimuspng" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MDAgNTAwIiBmaWxsPSIjY2MyMTIxIj48cmVjdCB3aWR0aD0iNTAwIiBoZWlnaHQ9IjUwMCIgZmlsbD0iI2NjMjEyMSIvPjxjaXJjbGUgY3g9IjI1MCIgY3k9IjI1MCIgcj0iMTUwIiBmaWxsPSIjZmZkNzAwIi8+PHBhdGggZD0iTTE3NSAxNzVIMTc1djE1MEgxNzV6TTMyNSAxNzVIMzI1djE1MEgzMjV6TTI1MCAxMjV2MjUwTTEyNSAyNTBoMjUwIiBzdHJva2U9IiNjYzIxMjEiIHN0cm9rZS13aWR0aD0iMjAiLz48L3N2Zz4=" crossorigin="anonymous">
+            <img id="bumblebeepng" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MDAgNTAwIiBmaWxsPSIjZmZkNzAwIj48cmVjdCB3aWR0aD0iNTAwIiBoZWlnaHQ9IjUwMCIgZ illsbD0iI2ZmZDcwMCIvPjxyZWN0IHg9IjEwMCIgeT0iMTAwIiB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzMzMzMzMyIvPjxwb2x5Z29uIHBvaW50cz0iMjUwLDEwMCAzNTAsMjAwIDI1MCwzMDAgMTUwLDIwMCIgZmlsbD0iI2NjMjEyMSIvPjwvc3ZnPg==" crossorigin="anonymous">
+            <img id="megatronpng" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MDAgNTAwIiBmaWxsPSIjMzMzMzMzIj48cmVjdCB3aWR0aD0iNTAwIiBoZWlnaHQ9IjUwMCIgZmlsbD0iIzMzMzMzMyIvPjxwb2x5Z29uIHBvaW50cz0iMjUwLDc1IDMyNSwxNzUgMjUwLDI3NSAxNzUsMTc1IiBmaWxsPSIjN2I3YjdiIi8+PHBvbHlnb24gcG9pbnRzPSIxNzUsMTc1IDI1MCwyNzUgMzI1LDE3NSAyNTAsNzUiIHN0cm9rZT0iI2NjMjEyMSIgc3Ryb2tlLXdpZHRoPSIxNSIgZmlsbD0ibm9uZSIvPjxjaXJjbGUgY3g9IjI1MCIgY3k9IjM1MCIgcj0iNTAiIGZpbGw9IiNjYzIxMjEiLz48L3N2Zz4=" crossorigin="anonymous">
+        </a-assets>
+
+        <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" 
+                  raycaster="objects: .clickable"></a-camera>
+
+        <!-- Contenedor único para el Transformer -->
+        <a-entity mindar-image-target="targetIndex: 0">
+            <a-image id="background-image" src="#optimuspng" position="0 0 -0.1" scale="1 1 1" width="2" height="2"></a-image>
+            <a-entity id="transformer-container" class="clickable" click-handler>
+                <!-- Optimus Prime (inicialmente visible) -->
+                <a-box position="0 0.5 0" color="#CC2121" scale="0.5 0.5 0.5" 
+                       animation="property: rotation; to: 0 360 0; loop: true; dur: 5000" 
+                       id="optimus-object" visible="true">
+                    <a-text value="Optimus" align="center" position="0 -0.6 0.26" color="#FFD700" width="3"></a-text>
+                </a-box>
+                
+                <!-- Bumblebee (inicialmente oculto) -->
+                <a-cylinder position="0 0.5 0" color="#FFD700" radius="0.3" height="0.5" 
+                            animation="property: rotation; to: 360 0 0; loop: true; dur: 3000" 
+                            id="bumblebee-object" visible="false">
+                    <a-text value="Bumblebee" align="center" position="0 -0.6 0.26" color="#333" width="3"></a-text>
+                </a-cylinder>
+                
+                <!-- Megatron (inicialmente oculto) -->
+                <a-cone position="0 0.5 0" color="#333" radius-bottom="0.4" radius-top="0.1" height="0.8" 
+                        animation="property: position; dir: alternate; loop: true; dur: 2000; to: 0 0.8 0" 
+                        id="megatron-object" visible="false">
+                    <a-text value="Megatron" align="center" position="0 -0.8 0.26" color="#CC2121" width="3"></a-text>
+                </a-cone>
+            </a-entity>
+        </a-entity>
     </a-scene>
-  </body>
+
+    <div class="github-pages-info">
+        <h3>Instrucciones para GitHub Pages</h3>
+        <p>Para ejecutar esta aplicación en GitHub Pages, sigue estos pasos:</p>
+        <ol class="steps">
+            <li>Crea un nuevo repositorio en GitHub</li>
+            <li>Sube este archivo HTML con el nombre <code>index.html</code></li>
+            <li>Asegúrate de tener un archivo <code>targets.mind</code> en el mismo directorio</li>
+            <li>Ve a la configuración del repositorio y activa GitHub Pages en la sección correspondiente</li>
+            <li>Selecciona la rama principal (main o master) como fuente</li>
+            <li>Tu aplicación estará disponible en: <code>https://[tu-usuario].github.io/[nombre-repositorio]</code></li>
+        </ol>
+        
+        <h3>Notas importantes:</h3>
+        <ul class="steps">
+            <li>GitHub Pages requiere que el archivo se llame <code>index.html</code></li>
+            <li>Asegúrate de que el archivo <code>targets.mind</code> esté en el mismo directorio</li>
+            <li>La aplicación necesitará permisos de cámara, así que los usuarios deberán permitir el acceso</li>
+            <li>Para mejores resultados, accede desde un dispositivo móvil con cámara</li>
+        </ul>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configuración de controles
+            const startButton = document.querySelector('#start-button');
+            const stopButton = document.querySelector('#stop-button');
+            const scanningOverlay = document.querySelector('#scanning-overlay');
+            const detectionFeedback = document.querySelector('#detection-feedback');
+            const modelSelector = document.querySelector('#model-selector');
+            const modelButtons = document.querySelectorAll('.model-btn');
+            
+            const sceneEl = document.querySelector('a-scene');
+            let arSystem;
+            
+            // Referencias a los modelos y fondo
+            const optimusObject = document.querySelector('#optimus-object');
+            const bumblebeeObject = document.querySelector('#bumblebee-object');
+            const megatronObject = document.querySelector('#megatron-object');
+            const backgroundImage = document.querySelector('#background-image');
+            
+            // Modelo actual
+            let currentModel = 'optimus';
+            
+            sceneEl.addEventListener('loaded', function() {
+                arSystem = sceneEl.systems["mindar-image-system"];
+            });
+            
+            startButton.addEventListener('click', () => {
+                arSystem.start();
+                scanningOverlay.classList.add('hidden');
+                modelSelector.style.display = 'flex';
+            });
+            
+            stopButton.addEventListener('click', () => {
+                arSystem.stop();
+                scanningOverlay.classList.remove('hidden');
+                modelSelector.style.display = 'none';
+            });
+            
+            // Cambiar modelo desde los botones
+            modelButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const model = this.getAttribute('data-model');
+                    changeModel(model);
+                    
+                    // Actualizar botones activos
+                    modelButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Función para cambiar el modelo
+            function changeModel(model) {
+                // Ocultar todos los modelos
+                optimusObject.setAttribute('visible', 'false');
+                bumblebeeObject.setAttribute('visible', 'false');
+                megatronObject.setAttribute('visible', 'false');
+                
+                // Mostrar el modelo seleccionado y cambiar el fondo
+                switch(model) {
+                    case 'optimus':
+                        optimusObject.setAttribute('visible', 'true');
+                        backgroundImage.setAttribute('src', '#optimuspng');
+                        break;
+                    case 'bumblebee':
+                        bumblebeeObject.setAttribute('visible', 'true');
+                        backgroundImage.setAttribute('src', '#bumblebeepng');
+                        break;
+                    case 'megatron':
+                        megatronObject.setAttribute('visible', 'true');
+                        backgroundImage.setAttribute('src', '#megatronpng');
+                        break;
+                }
+                
+                currentModel = model;
+            }
+            
+            // Eventos de detección de target
+            const target = document.querySelector('[mindar-image-target]');
+            
+            target.addEventListener('targetFound', event => {
+                console.log('Target encontrado');
+                detectionFeedback.textContent = '¡Transformer detectado!';
+                detectionFeedback.classList.add('visible');
+                
+                // Ocultar el feedback después de 2 segundos
+                setTimeout(() => {
+                    detectionFeedback.classList.remove('visible');
+                }, 2000);
+            });
+            
+            target.addEventListener('targetLost', event => {
+                console.log('Target perdido');
+            });
+            
+            // Componente para manejar clicks en el objeto 3D
+            AFRAME.registerComponent('click-handler', {
+                init: function () {
+                    this.el.addEventListener('click', (evt) => {
+                        // Cambiar al siguiente modelo en el ciclo
+                        const models = ['optimus', 'bumblebee', 'megatron'];
+                        const currentIndex = models.indexOf(currentModel);
+                        const nextIndex = (currentIndex + 1) % models.length;
+                        const nextModel = models[nextIndex];
+                        
+                        changeModel(nextModel);
+                        
+                        // Actualizar botones activos
+                        modelButtons.forEach(btn => {
+                            btn.classList.remove('active');
+                            if (btn.getAttribute('data-model') === nextModel) {
+                                btn.classList.add('active');
+                            }
+                        });
+                        
+                        // Efecto visual de click
+                        const transformerContainer = this.el;
+                        const originalScale = transformerContainer.object3D.scale.clone();
+                        const targetScale = originalScale.clone().multiplyScalar(1.2);
+                        
+                        transformerContainer.setAttribute('animation', {
+                            property: 'scale',
+                            to: `${targetScale.x} ${targetScale.y} ${targetScale.z}`,
+                            dur: 200,
+                            easing: 'easeOutQuad'
+                        });
+                        
+                        setTimeout(() => {
+                            transformerContainer.setAttribute('animation', {
+                                property: 'scale',
+                                to: `${originalScale.x} ${originalScale.y} ${originalScale.z}`,
+                                dur: 200,
+                                easing: 'easeOutQuad'
+                            });
+                        }, 200);
+                        
+                        console.log('Transformer cambiado a:', nextModel);
+                    });
+                }
+            });
+            
+            // Manejar eventos de realidad aumentada
+            sceneEl.addEventListener("arReady", (event) => {
+                console.log("MindAR está listo");
+            });
+            
+            sceneEl.addEventListener("arError", (event) => {
+                console.log("Error al inicializar MindAR");
+                scanningOverlay.querySelector('.scanning-text').textContent = 
+                    "Error al acceder a la cámara. Asegúrate de dar los permisos necesarios.";
+            });
+        });
+    </script>
+</body>
 </html>
