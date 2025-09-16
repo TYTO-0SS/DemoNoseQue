@@ -13,9 +13,10 @@
             margin: 0;
             padding: 0;
             font-family: 'Alice', serif;
-            background-color: #000;
+            background: linear-gradient(to bottom, #222, #000);
             color: white;
             overflow: hidden;
+            height: 100vh;
         }
         
         #message {
@@ -23,15 +24,18 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.8);
             color: white;
             padding: 20px 30px;
             border-radius: 10px;
             font-family: 'Alice', serif;
-            font-size: 18px;
+            font-size: 20px;
             text-align: center;
             z-index: 999;
             transition: opacity 0.5s ease;
+            border: 2px solid #1E90FF;
+            box-shadow: 0 0 15px rgba(30, 144, 255, 0.5);
+            max-width: 80%;
         }
         
         #message.hidden {
@@ -61,6 +65,7 @@
             transition: all 0.3s;
             font-size: 16px;
             font-family: 'Alice', serif;
+            box-shadow: 0 0 10px rgba(30, 144, 255, 0.4);
         }
         
         button:hover {
@@ -82,6 +87,9 @@
             color: #1E90FF;
             text-shadow: 1px 1px 3px #000;
             font-family: 'Alice', serif;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px;
+            border-bottom: 2px solid #1E90FF;
         }
         
         .detection-feedback.visible {
@@ -97,6 +105,10 @@
             color: #ccc;
             z-index: 1000;
             font-family: 'Alice', serif;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 8px;
+            border-top: 1px solid #1E90FF;
+            border-bottom: 1px solid #1E90FF;
         }
         
         .model-selector {
@@ -111,6 +123,7 @@
             padding: 15px;
             border-radius: 10px;
             border: 1px solid #1E90FF;
+            box-shadow: 0 0 10px rgba(30, 144, 255, 0.4);
         }
         
         .model-btn {
@@ -122,6 +135,7 @@
             cursor: pointer;
             transition: all 0.3s;
             font-family: 'Alice', serif;
+            text-align: center;
         }
         
         .model-btn:hover, .model-btn.active {
@@ -149,10 +163,68 @@
                 flex-direction: row;
                 justify-content: center;
             }
+            
+            #message {
+                font-size: 18px;
+                padding: 15px 20px;
+            }
+        }
+        
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            transition: opacity 0.5s;
+        }
+        
+        .loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(30, 144, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #1E90FF;
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .title {
+            font-family: 'Alice', serif;
+            font-size: 32px;
+            color: #1E90FF;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(30, 144, 255, 0.7);
+            width: 100%;
+            padding: 10px;
         }
     </style>
 </head>
 <body>
+    <!-- Pantalla de carga -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div>Cargando modelos 3D...</div>
+    </div>
+
+    <div class="title">Transformers AR Experience</div>
+    
     <!-- Mensaje inicial para ajustar la cámara -->
     <div id="message">📷 Apunta tu cámara al marcador para comenzar</div>
     
@@ -180,11 +252,6 @@
             <a-asset-item id="optimusModel" src="./optimus.glb"></a-asset-item>
             <a-asset-item id="bumblebeeModel" src="./bumblebee.glb"></a-asset-item>
             <a-asset-item id="megatronModel" src="./megatron.glb"></a-asset-item>
-            
-            <!-- Fondos personalizados para cada Transformer -->
-            <img id="optimuspng" src="./optimuspng.jpg" crossorigin="anonymous">
-            <img id="bumblebeepng" src="./bumblebeepng.jpg" crossorigin="anonymous">
-            <img id="megatronpng" src="./megatronpng.jpg" crossorigin="anonymous">
         </a-assets>
 
         <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" 
@@ -192,29 +259,26 @@
 
         <!-- Contenedor único para el Transformer -->
         <a-entity mindar-image-target="targetIndex: 0" id="target-entity">
-            <!-- Fondo (más atrás y más pequeño) -->
-            <a-image id="background-image" src="#optimuspng" position="0 -0.2 -0.5" scale="1.5 1.5 1.5" width="1.5" height="1.5"></a-image>
-            
             <!-- Touch plane para hacer clic -->
             <a-plane id="touch-plane" class="clickable" position="0 -0.2 0" rotation="0 0 0" width="2.5" height="2.5" color="#000" opacity="0" transparent="true"></a-plane>
             
             <a-entity id="transformer-container" position="0 -0.2 0">
                 <!-- Optimus Prime (inicialmente visible, más pequeño) -->
-                <a-entity id="optimus-object" visible="true" position="0 0 0" scale="0.2 0.2 0.2">
+                <a-entity id="optimus-object" visible="true" position="0 0 0" scale="0.10 0.10 0.10">
                     <a-gltf-model src="#optimusModel" animation="property: rotation; to: 0 360 0; loop: true; dur: 8000"></a-gltf-model>
-                    <a-text value="Optimus Prime" align="center" position="0 1.8 0" color="#1E90FF" width="5" scale="2 2 2"></a-text>
+                    <a-text value="Optimus Prime" align="center" position="0 2.2 0" color="#1E90FF" width="5" scale="2 2 2" font="alice"></a-text>
                 </a-entity>
                 
                 <!-- Bumblebee (inicialmente oculto, más pequeño) -->
-                <a-entity id="bumblebee-object" visible="false" position="0 0 0" scale="0.2 0.2 0.2">
+                <a-entity id="bumblebee-object" visible="false" position="0 0 0" scale="0.05 0.05 0.05">
                     <a-gltf-model src="#bumblebeeModel" animation="property: rotation; to: 0 360 0; loop: true; dur: 8000"></a-gltf-model>
-                    <a-text value="Bumblebee" align="center" position="0 1.8 0" color="#1E90FF" width="5" scale="2 2 2"></a-text>
+                    <a-text value="Bumblebee" align="center" position="0 2.2 0" color="#1E90FF" width="5" scale="2 2 2" font="alice"></a-text>
                 </a-entity>
                 
                 <!-- Megatron (inicialmente oculto, más pequeño) -->
-                <a-entity id="megatron-object" visible="false" position="0 0 0" scale="0.2 0.2 0.2">
+                <a-entity id="megatron-object" visible="false" position="0 0 0" scale="0.05 0.05 0.05">
                     <a-gltf-model src="#megatronModel" animation="property: rotation; to: 0 360 0; loop: true; dur: 8000"></a-gltf-model>
-                    <a-text value="Megatron" align="center" position="0 1.8 0" color="#1E90FF" width="5" scale="2 2 2"></a-text>
+                    <a-text value="Megatron" align="center" position="0 2.2 0" color="#1E90FF" width="5" scale="2 2 2" font="alice"></a-text>
                 </a-entity>
             </a-entity>
         </a-entity>
@@ -248,6 +312,12 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Ocultar pantalla de carga cuando todo esté listo
+            const loading = document.querySelector('#loading');
+            setTimeout(() => {
+                loading.classList.add('hidden');
+            }, 2000);
+            
             // Configuración de controles
             const startButton = document.querySelector('#start-button');
             const stopButton = document.querySelector('#stop-button');
@@ -258,11 +328,10 @@
             const targetEntity = document.querySelector('#target-entity');
             const touchPlane = document.querySelector('#touch-plane');
             
-            // Referencias a los modelos y fondo
+            // Referencias a los modelos
             const optimusObject = document.querySelector('#optimus-object');
             const bumblebeeObject = document.querySelector('#bumblebee-object');
             const megatronObject = document.querySelector('#megatron-object');
-            const backgroundImage = document.querySelector('#background-image');
             
             // Referencias a los botones de A-Frame
             const aframeModelButtons = document.querySelectorAll('.model-selector-btn');
@@ -362,19 +431,16 @@
                 bumblebeeObject.setAttribute('visible', 'false');
                 megatronObject.setAttribute('visible', 'false');
                 
-                // Mostrar el modelo seleccionado y cambiar el fondo
+                // Mostrar el modelo seleccionado
                 switch(model) {
                     case 'optimus':
                         optimusObject.setAttribute('visible', 'true');
-                        backgroundImage.setAttribute('src', '#optimuspng');
                         break;
                     case 'bumblebee':
                         bumblebeeObject.setAttribute('visible', 'true');
-                        backgroundImage.setAttribute('src', '#bumblebeepng');
                         break;
                     case 'megatron':
                         megatronObject.setAttribute('visible', 'true');
-                        backgroundImage.setAttribute('src', '#megatronpng');
                         break;
                 }
                 
