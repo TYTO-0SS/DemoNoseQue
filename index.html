@@ -7,11 +7,12 @@
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.0.0/dist/aframe-extras.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Alice&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Alice', serif;
             background-color: #000;
             color: white;
             overflow: hidden;
@@ -26,7 +27,7 @@
             color: white;
             padding: 20px 30px;
             border-radius: 10px;
-            font-family: sans-serif;
+            font-family: 'Alice', serif;
             font-size: 18px;
             text-align: center;
             z-index: 999;
@@ -51,18 +52,19 @@
         
         button {
             padding: 12px 25px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 215, 0, 0.7);
+            background: rgba(0, 50, 100, 0.7);
+            border: 2px solid rgba(30, 144, 255, 0.7);
             border-radius: 25px;
             color: white;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
             font-size: 16px;
+            font-family: 'Alice', serif;
         }
         
         button:hover {
-            background: rgba(255, 215, 0, 0.3);
+            background: rgba(30, 144, 255, 0.5);
             transform: scale(1.05);
         }
         
@@ -77,8 +79,9 @@
             opacity: 0;
             transition: opacity 0.5s;
             z-index: 1000;
-            color: #FFD700;
+            color: #1E90FF;
             text-shadow: 1px 1px 3px #000;
+            font-family: 'Alice', serif;
         }
         
         .detection-feedback.visible {
@@ -93,6 +96,7 @@
             font-size: 16px;
             color: #ccc;
             z-index: 1000;
+            font-family: 'Alice', serif;
         }
         
         .model-selector {
@@ -106,21 +110,22 @@
             background: rgba(0, 0, 0, 0.6);
             padding: 15px;
             border-radius: 10px;
-            border: 1px solid #FFD700;
+            border: 1px solid #1E90FF;
         }
         
         .model-btn {
             padding: 8px 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid #FFD700;
+            background: rgba(0, 50, 100, 0.5);
+            border: 1px solid #1E90FF;
             border-radius: 5px;
             color: white;
             cursor: pointer;
             transition: all 0.3s;
+            font-family: 'Alice', serif;
         }
         
         .model-btn:hover, .model-btn.active {
-            background: rgba(255, 215, 0, 0.3);
+            background: rgba(30, 144, 255, 0.3);
         }
         
         .model-btn.optimus {
@@ -187,55 +192,55 @@
 
         <!-- Contenedor único para el Transformer -->
         <a-entity mindar-image-target="targetIndex: 0" id="target-entity">
-            <!-- Fondo (más atrás) -->
-            <a-image id="background-image" src="#optimuspng" position="0 0 -0.5" scale="2 2 2" width="2" height="2"></a-image>
+            <!-- Fondo (más atrás y más pequeño) -->
+            <a-image id="background-image" src="#optimuspng" position="0 -0.2 -0.5" scale="1.5 1.5 1.5" width="1.5" height="1.5"></a-image>
             
             <!-- Touch plane para hacer clic -->
-            <a-plane id="touch-plane" class="clickable" position="0 0 0" rotation="0 0 0" width="2.5" height="2.5" color="#000" opacity="0" transparent="true"></a-plane>
+            <a-plane id="touch-plane" class="clickable" position="0 -0.2 0" rotation="0 0 0" width="2.5" height="2.5" color="#000" opacity="0" transparent="true"></a-plane>
             
-            <a-entity id="transformer-container" position="0 0 0">
-                <!-- Optimus Prime (inicialmente visible) -->
-                <a-entity id="optimus-object" visible="true" position="0 0 0" scale="0.25 0.25 0.25">
+            <a-entity id="transformer-container" position="0 -0.2 0">
+                <!-- Optimus Prime (inicialmente visible, más pequeño) -->
+                <a-entity id="optimus-object" visible="true" position="0 0 0" scale="0.2 0.2 0.2">
                     <a-gltf-model src="#optimusModel" animation="property: rotation; to: 0 360 0; loop: true; dur: 8000"></a-gltf-model>
-                    <a-text value="Optimus Prime" align="center" position="0 1.8 0" color="#FFD700" width="5" scale="2 2 2"></a-text>
+                    <a-text value="Optimus Prime" align="center" position="0 1.8 0" color="#1E90FF" width="5" scale="2 2 2"></a-text>
                 </a-entity>
                 
-                <!-- Bumblebee (inicialmente oculto) -->
-                <a-entity id="bumblebee-object" visible="false" position="0 0 0" scale="0.25 0.25 0.25">
+                <!-- Bumblebee (inicialmente oculto, más pequeño) -->
+                <a-entity id="bumblebee-object" visible="false" position="0 0 0" scale="0.2 0.2 0.2">
                     <a-gltf-model src="#bumblebeeModel" animation="property: rotation; to: 0 360 0; loop: true; dur: 8000"></a-gltf-model>
-                    <a-text value="Bumblebee" align="center" position="0 1.8 0" color="#FFD700" width="5" scale="2 2 2"></a-text>
+                    <a-text value="Bumblebee" align="center" position="0 1.8 0" color="#1E90FF" width="5" scale="2 2 2"></a-text>
                 </a-entity>
                 
-                <!-- Megatron (inicialmente oculto) -->
-                <a-entity id="megatron-object" visible="false" position="0 0 0" scale="0.25 0.25 0.25">
+                <!-- Megatron (inicialmente oculto, más pequeño) -->
+                <a-entity id="megatron-object" visible="false" position="0 0 0" scale="0.2 0.2 0.2">
                     <a-gltf-model src="#megatronModel" animation="property: rotation; to: 0 360 0; loop: true; dur: 8000"></a-gltf-model>
-                    <a-text value="Megatron" align="center" position="0 1.8 0" color="#FFD700" width="5" scale="2 2 2"></a-text>
+                    <a-text value="Megatron" align="center" position="0 1.8 0" color="#1E90FF" width="5" scale="2 2 2"></a-text>
                 </a-entity>
             </a-entity>
         </a-entity>
 
         <!-- Interfaz A-Frame (aful) -->
         <a-entity id="ui-container" position="0 0 0">
-            <!-- Panel de información -->
-            <a-plane id="info-panel" position="0 -1.2 0" width="2" height="0.4" color="#222" opacity="0.8" rotation="0 0 0">
-                <a-text value="Transformers AR" align="center" position="0 0 0.01" color="#FFD700" width="3"></a-text>
+            <!-- Panel de información (azul) -->
+            <a-plane id="info-panel" position="0 -1.4 0" width="2" height="0.4" color="#003366" opacity="0.8" rotation="0 0 0">
+                <a-text value="Transformers AR" align="center" position="0 0 0.01" color="#1E90FF" width="3" font="alice"></a-text>
             </a-plane>
             
-            <!-- Selector de modelos en A-Frame -->
-            <a-entity id="aframe-model-selector" position="0 -1.7 0">
-                <a-circle class="model-selector-btn optimus active" position="-0.6 0 0" radius="0.15" color="#CC2121" 
+            <!-- Selector de modelos en A-Frame (azul) -->
+            <a-entity id="aframe-model-selector" position="0 -1.9 0">
+                <a-circle class="model-selector-btn optimus active" position="-0.6 0 0" radius="0.15" color="#003366" 
                           data-model="optimus" event-set__click="scale: 0.9 0.9 0.9; scaleTo: 1 1 1; dur: 200">
-                    <a-text value="O" align="center" position="0 0 0.01" color="#FFF" width="1"></a-text>
+                    <a-text value="O" align="center" position="0 0 0.01" color="#FFF" width="1" font="alice"></a-text>
                 </a-circle>
                 
-                <a-circle class="model-selector-btn bumblebee" position="0 0 0" radius="0.15" color="#FFD700" 
+                <a-circle class="model-selector-btn bumblebee" position="0 0 0" radius="0.15" color="#003366" 
                           data-model="bumblebee" event-set__click="scale: 0.9 0.9 0.9; scaleTo: 1 1 1; dur: 200">
-                    <a-text value="B" align="center" position="0 0 0.01" color="#333" width="1"></a-text>
+                    <a-text value="B" align="center" position="0 0 0.01" color="#FFD700" width="1" font="alice"></a-text>
                 </a-circle>
                 
-                <a-circle class="model-selector-btn megatron" position="0.6 0 0" radius="0.15" color="#333" 
+                <a-circle class="model-selector-btn megatron" position="0.6 0 0" radius="0.15" color="#003366" 
                           data-model="megatron" event-set__click="scale: 0.9 0.9 0.9; scaleTo: 1 1 1; dur: 200">
-                    <a-text value="M" align="center" position="0 0 0.01" color="#CC2121" width="1"></a-text>
+                    <a-text value="M" align="center" position="0 0 0.01" color="#CC2121" width="1" font="alice"></a-text>
                 </a-circle>
             </a-entity>
         </a-entity>
@@ -317,11 +322,9 @@
                     // Actualizar botones de A-Frame
                     aframeModelButtons.forEach(btn => {
                         if (btn.getAttribute('data-model') === model) {
-                            btn.setAttribute('color', '#FFD700');
+                            btn.setAttribute('color', '#1E90FF');
                         } else {
-                            const color = btn.getAttribute('data-model') === 'optimus' ? '#CC2121' : 
-                                         btn.getAttribute('data-model') === 'bumblebee' ? '#FFD700' : '#333';
-                            btn.setAttribute('color', color);
+                            btn.setAttribute('color', '#003366');
                         }
                     });
                 });
@@ -344,11 +347,9 @@
                     // Actualizar botones de A-Frame
                     aframeModelButtons.forEach(btn => {
                         if (btn.getAttribute('data-model') === model) {
-                            btn.setAttribute('color', '#FFD700');
+                            btn.setAttribute('color', '#1E90FF');
                         } else {
-                            const color = btn.getAttribute('data-model') === 'optimus' ? '#CC2121' : 
-                                         btn.getAttribute('data-model') === 'bumblebee' ? '#FFD700' : '#333';
-                            btn.setAttribute('color', color);
+                            btn.setAttribute('color', '#003366');
                         }
                     });
                 });
@@ -403,11 +404,9 @@
                         // Actualizar botones de A-Frame
                         aframeModelButtons.forEach(btn => {
                             if (btn.getAttribute('data-model') === nextModel) {
-                                btn.setAttribute('color', '#FFD700');
+                                btn.setAttribute('color', '#1E90FF');
                             } else {
-                                const color = btn.getAttribute('data-model') === 'optimus' ? '#CC2121' : 
-                                             btn.getAttribute('data-model') === 'bumblebee' ? '#FFD700' : '#333';
-                                btn.setAttribute('color', color);
+                                btn.setAttribute('color', '#003366');
                             }
                         });
                         
